@@ -1,0 +1,18 @@
+== 0.0.6 2009-11-13
+
+* Added Amazon CA rules
+
+== 0.0.5 2009-09-08
+
+* Added Amazon US rules
+
+== 0.0.4 2009-09-08
+
+* renamed the project from rscrape to forager
+* added bambinodirect rules
+
+
+== 0.0.3 2009-06-08
+
+* 1 major enhancement:
+  * Initial release

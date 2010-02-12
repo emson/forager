@@ -1,0 +1,165 @@
+#!/usr/bin/env ruby
+
+# binary command-line entry point
+require File.dirname(__FILE__) + '/../lib/forager'
+
+
+
+class ForagerApp
+  
+  def initialize(args)
+    @uri = 'http://www.amazon.co.uk/Canon-EOS-50D-Digital-Camera/dp/B001E97GDK/ref=sr_1_1?ie=UTF8&s=electronics&qid=1243205826&sr=8-1'
+    process(args)
+  end
+  
+  
+  private 
+  
+  def process(args)
+    case 
+    when args.include?('demo')
+      demo(args[1]) if args.size > 1
+      demo if args.size == 1
+    when args.include?('test')
+      test
+    when args.include?('testlive')
+      test true
+    when args.include?('help') || args.size == 0
+      help
+    else
+      do_uri(args[0])
+    end
+  end
+  
+  def test(is_live=false)
+    puts "currently scraping the test HTML files..."
+    puts
+    current_path = File.join(File.dirname(__FILE__), "../lib/forager/test")
+    require File.join(current_path, "all_loader")
+    tester = AllLoader.new
+    scraper = Scraper.new
+    extractor = Extractor.new
+    tester.keys.each do |key|
+      content = (is_live) ? nil : read(File.join(current_path, key))
+      uri = tester[key]
+      test_scrape(scraper, extractor, uri, content, key)
+    end
+  end
+  
+  def do_uri(uri)
+    @uri = uri
+    demo
+  end
+  
+  def demo(uri=@uri)
+    @uri = uri
+    is_ignore_debugging = false
+    LoggerHelper.logger.level = Logger::ERROR
+    LoggerHelper.logger.is_ignore(is_ignore_debugging)
+    puts "Title and price demo..."
+    puts "======================="
+    puts "using URI:  \n#{@uri}\n\n"
+    puts "ignore debugging is: #{is_ignore_debugging}"
+    scraper = Scraper.new
+    extractor = Extractor.new
+    container = scraper.scrape(uri)
+    
+    # keys to get the scraped values from the snippet container
+    domain = UriHelper.host_from(uri)
+    result_title = container["#{domain}/product/title"]
+    result_price = container["#{domain}/product/price"]
+    
+    title = extractor.extract(result_title) 
+    price = extractor.extract(result_price)
+    puts "\nRetrieved\n---------\nthe title is: #{title}"
+    puts "the price is: #{price.to_s} \n\n"
+  end
+  
+  def help
+    usage = <<EOF
+    forager(1)              Forager General Commands Manual              forager(1)
+
+    NAME
+         forager -- scrapes content from web sites
+
+    SYNOPSIS
+         forager ["uri"|<help>|<demo>|<test>|<testlive>]
+
+    DESCRIPTION
+         Provide the command with a URI and the tool will go to that web site and
+         scrape the data. The rules governing how to scrape each web site and what
+         content to scrape can be found in the forager/rules directory.
+
+         If no operands are given, then forager will display this help page.
+         To debug set bin/forager Logger::ERROR to Logger::DEBUG
+
+         The following options are available:
+
+         "uri"     Executes a scrape against the provided URI, please keep the 
+                   quotes.
+         help      Display this help page.
+         demo      Executes a scrape based on a predifined URI.
+         test      Executes a scrape against all test pages in the test directory.
+         testlive  Executes a live internet scrape using the URIs from the test directory.
+         
+    AUTHOR
+         B. F. B. Emson Esq.
+         June 2009
+         
+EOF
+    puts usage
+  end
+  
+  private
+  
+  def test_scrape(scraper, extractor, uri, content, filename)
+    container = scraper.scrape(uri, content)
+    
+    domain = UriHelper.host_from(uri)
+    result_title = container["#{domain}/product/title"]
+    result_price = container["#{domain}/product/price"]
+    
+    title = extractor.extract(result_title) 
+    price = extractor.extract(result_price)
+    puts "File: #{filename}"
+    puts "URI: #{uri}"
+    puts "Title: #{title}"
+    puts "Price: #{price}"
+    puts
+  end
+  
+  def read(filename)
+    content = ''
+    IO.foreach(filename) { |line| content << line }
+    return content
+  end
+  
+end
+
+# don't need the __FILE__ check as this prevents it working as a command-line tool
+ForagerApp.new(ARGV)
+
+# if __FILE__ == $0 then
+#   app = ForagerApp.new(ARGV)
+# end
+
+
+# command = ARGV[0]
+# directory = ARGV[1]
+# 
+# if !command || !directory
+#   puts "Usage: #{$0} <build|setup|preview> <directory>"
+#   exit
+# end
+# 
+# configuration = StaticMatic::Configuration.new
+# 
+# config_file = "#{directory}/src/configuration.rb"
+# 
+# if File.exists?(config_file)
+#   config = File.read(config_file)
+#   eval(config)
+# end
+# 
+# staticmatic = StaticMatic::Base.new(directory, configuration)
+# staticmatic.run(command)

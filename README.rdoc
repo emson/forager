@@ -1,0 +1,34 @@
+= forager
+
+* http://github.com/#{github_username}/#{project_name}
+
+== DESCRIPTION:
+
+RubyGem that provides a library for scraping content from web sites.
+This library has the following emphasis:
+1. To be very very easy to maintain and change
+2. To provide an excellent tracking system, that will make it easy to modify when problems occur
+3. To easily scale to 1000's of web sites
+
+== FEATURES/PROBLEMS:
+
+
+
+== SYNOPSIS:
+
+  scraper = Scraper.new()
+  extractor = Extractor.new
+
+
+== REQUIREMENTS:
+
+* FIX (list of requirements)
+
+== INSTALL:
+
+sudo gem install forager
+
+== LICENSE:
+
+Copyright (c) June 2009 B. F. B. Emson
+
