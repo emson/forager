@@ -1,6 +1,6 @@
 = forager
 
-* http://github.com/#{github_username}/#{project_name}
+* http://github.com/emson/forager
 
 == DESCRIPTION:
 
@@ -10,14 +10,26 @@ This library has the following emphasis:
 2. To provide an excellent tracking system, that will make it easy to modify when problems occur
 3. To easily scale to 1000's of web sites
 
-== FEATURES/PROBLEMS:
+== TODO:
 
-
+1. Move rules out of the main project
+2. Improve the tracker, for managing broken page links.
+3. Refactor Extractor so that it, extracts the value in a more robust way.
 
 == SYNOPSIS:
 
-  scraper = Scraper.new()
-  extractor = Extractor.new
+  To use forager from the command line try:
+  
+  forager ["uri"|<help>|<demo>|<test>|<testlive>]
+  
+  e.g. 
+  forager help
+  forager demo
+  forager test  // this will test local HTML pages
+  forager testlive  // this will run the tests against the live (test) urls
+  forager "http://www.amazon.co.uk/Ruby-Way-Programming-Addison-Wesley-Professional/dp/0672328844/ref=sr_1_1?ie=UTF8&s=books&qid=1265974068&sr=1-1"
+  
+  
 
 
 == REQUIREMENTS:
